@@ -1,0 +1,13 @@
+PRUEBA FIREBASE - CONTROL DE PRESENCIA
+
+1. Descomprime el ZIP.
+2. En GitHub, abre el repositorio control-presencia-pages.
+3. En la RAIZ del repositorio (no dentro de otra carpeta), sube la carpeta firebase-app completa, conservando su archivo index.html.
+4. Haz Commit changes.
+5. Abre: https://angelgranadosmartinez-spec.github.io/control-presencia-pages/firebase-app/
+6. Inicia sesion con el administrador de Firebase Authentication.
+7. Verifica 'Administrador activo confirmado'. Crea una dependencia ficticia y compruebala en Firestore > Datos > departments.
+
+Esta prueba NO crea trabajadores ni fichajes y NO utiliza Supabase. Mantén la aplicación principal intacta.
+Firebase config contiene solo identificadores publicos de tu app. No subas claves privadas, contraseñas ni cuentas de servicio.
+Si se despliega en un repositorio PUBLICO, su codigo fuente es visible. No introduzcas datos reales hasta completar las pruebas y las autorizaciones de tu organizacion.
