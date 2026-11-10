@@ -1,0 +1,13 @@
+PRUEBA DE ACCESO DEL TRABAJADOR - FIREBASE
+
+1. Extrae este ZIP.
+2. En el repositorio PUBLICO control-presencia-pages de GitHub, sube la carpeta firebase-worker-test (incluido index.html) sin sustituir ningun archivo existente.
+3. En GitHub Pages abre https://angelgranadosmartinez-spec.github.io/control-presencia-pages/firebase-worker-test/
+4. Accede con un trabajador ficticio registrado en Firebase Authentication. Su UID debe coincidir con el ID en la coleccion users.
+5. Comprueba que aparece su nombre y la dependencia que corresponde a departmentId en Firestore.
+
+El boton Confirmar presencia esta deshabilitado INTENCIONADAMENTE. Esta prueba NO guarda fichajes ni requiere modificar las reglas existentes.
+
+La confirmacion diaria real requerira configurar un mecanismo de escritura seguro que utilice fecha/hora de servidor, compruebe dependencia y estado de usuario y evite duplicados. La variante habitual es Firebase Cloud Functions con Admin SDK y autorizacion del lado servidor; suele requerir proyecto Blaze con facturacion activada. No habilites permisos generales de escritura de attendance para hacer funcionar el boton.
+
+No modifica la version de Supabase ni la web principal.
