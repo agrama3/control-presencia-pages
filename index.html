@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Control de presencia | V6.3</title>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Control de presencia SEGEN ALA14</title>
 <style>
 :root{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#19293e;background:#f3f6fb}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1440px;padding:26px 18px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;gap:14px}.brand{display:flex;align-items:center;gap:12px}.mark{width:44px;height:44px;border-radius:12px;background:#172a45;color:#fff;display:grid;place-items:center;font-size:24px}.muted{color:#687b92}.small{font-size:13px}.head{margin:0;font-size:25px;letter-spacing:-.04em}.sub{margin:4px 0 0;font-size:14px}.card{background:#fff;border:1px solid #e1e8f1;border-radius:18px;padding:22px;margin-top:22px;box-shadow:0 3px 14px #19293e06}h2{font-size:19px;margin:0 0 12px}.hidden{display:none!important}label{font-size:14px;font-weight:650;display:block;margin:14px 0 6px}input{width:100%;padding:13px;border:1px solid #cad5e2;border-radius:10px;font-size:16px}button{background:#244f89;color:white;border:0;border-radius:11px;padding:12px 19px;font-size:14px;font-weight:650;cursor:pointer}button.ghost{background:#eaf0f8;color:#25476c}button:disabled{opacity:.55;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #9abef5;outline-offset:2px}.form{max-width:450px}.notice{padding:13px 15px;background:#eaf2fb;border-radius:12px;margin-top:16px;white-space:pre-wrap}.notice.error{background:#fff0f0;color:#ab2631}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.metric{padding:18px;background:white;border:1px solid #e1e8f1;border-radius:16px}.metric strong{display:block;font-size:36px;letter-spacing:-.04em;margin-top:6px}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.tag{display:inline-block;border-radius:99px;font-size:12px;padding:5px 10px;background:#e5f4ec;color:#187248;font-weight:650}.tag.pending{background:#fff3df;color:#996415}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:13px 11px;border-bottom:1px solid #eaf0f6}th{color:#728196;font-size:12px;text-transform:uppercase;letter-spacing:.05em}tbody tr:hover{background:#f8fafd}.fineprint{font-size:13px;color:#63748b;line-height:1.55;margin-top:20px}a{color:#244f89}@media(max-width:670px){.cards{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1 / -1}.top{align-items:flex-start}.head{font-size:21px}}
 
@@ -61,9 +61,38 @@
 #backToModes{padding:9px 13px}
 @media(max-width:600px){.access-options{grid-template-columns:1fr}.access-option{min-height:140px}}
 @media print{#accessPicker{display:none!important}}
-.login-password-wrapper{position:relative;width:100%;max-width:100%}.login-password-wrapper input{width:100%;padding-right:55px!important}.password-visibility{position:absolute;right:5px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:43px;height:40px;padding:0;border:0;background:transparent;color:#385675;border-radius:9px;cursor:pointer}.password-visibility:hover{background:#eaf0f8}.password-visibility:focus-visible{outline:2px solid #244f89;outline-offset:1px}</style></head><body><div class="wrap"><div class="top"><div class="brand"><div class="mark">✓</div><div><h1 class="head">Control de presencia</h1><p class="sub muted">Firebase Spark · V6.3</p></div></div><button id="logout" class="ghost hidden" type="button">Salir</button></div>
+.login-password-wrapper{position:relative;width:100%;max-width:100%}.login-password-wrapper input{width:100%;padding-right:55px!important}.password-visibility{position:absolute;right:5px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:43px;height:40px;padding:0;border:0;background:transparent;color:#385675;border-radius:9px;cursor:pointer}.password-visibility:hover{background:#eaf0f8}.password-visibility:focus-visible{outline:2px solid #244f89;outline-offset:1px}
+/* Cabecera institucional: logo centrado en todas las vistas */
+.presence-header{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:4px 90px 18px;text-align:center}
+.presence-header .ea-logo{display:block;width:100%;max-width:780px;height:auto;object-fit:contain}
+.presence-header .head{font-size:clamp(23px,3vw,30px);letter-spacing:-.035em}
+.presence-header #logout{position:absolute;right:0;top:0}
+@media(max-width:670px){.presence-header{padding:4px 0 10px;gap:12px}.presence-header .ea-logo{max-width:100%}.presence-header #logout{position:static;align-self:flex-end;order:3}.presence-header .head{font-size:23px}}
+
+/* Contraste mejorado: fondo gris azulado suave y cabecera institucional oscura */
+html,body {background:#e0e7f0;}
+.presence-header {
+  background:#344b69;
+  border:1px solid #2c415d;
+  border-radius:20px;
+  padding:24px 90px 26px;
+  box-shadow:0 6px 18px rgba(25,41,62,.10);
+  margin-bottom:6px;
+}
+.presence-header .head {color:#fff;}
+.presence-header #logout {right:20px;top:20px;background:#eaf0f8;color:#25476c;}
+@media (max-width:670px) {
+  .presence-header {padding:22px 18px 20px;gap:14px;border-radius:16px;}
+  .presence-header #logout {right:auto;top:auto;}
+}
+@media print {
+  html,body {background:#fff;}
+  .presence-header {background:#fff;border:0;box-shadow:none;}
+  .presence-header .head {color:#19293e;}
+}
+</style></head><body><div class="wrap"><div class="top presence-header"><img class="ea-logo" src="Logo-EA-blanco-version-3.png" alt="Ejército del Aire y del Espacio"><h1 class="head">Control de presencia SEGEN ALA14</h1><button id="logout" class="ghost hidden" type="button">Salir</button></div>
 <section id="accessPicker" class="card access-picker"><h2>¿Cómo quieres acceder?</h2><p class="muted small">Selecciona tu tipo de acceso para continuar.</p><div class="access-options"><button type="button" class="access-option" id="chooseAdmin"><span class="access-icon">♙</span><strong>Administrador</strong><span>Gestionar personal, dependencias e informes de asistencia</span></button><button type="button" class="access-option" id="chooseWorker"><span class="access-icon">✓</span><strong>Trabajador</strong><span>Confirmar tu presencia diaria en el puesto de trabajo</span></button></div></section>
-<section id="login" class="card login-card hidden"><div class="login-header"><h2 id="loginHeading">Acceso</h2><button class="ghost" type="button" id="backToModes">← Volver</button></div><p class="muted small" id="loginHelp">Introduce tu correo y contraseña de Firebase.</p><form id="loginForm" class="form"><label for="email">Correo electrónico</label><input id="email" type="email" autocomplete="username" required><label for="pass">Contraseña</label><div class="login-password-wrapper"><input id="pass" type="password" autocomplete="current-password" required><button type="button" id="toggleLoginPassword" class="password-visibility" aria-label="Mostrar contraseña" aria-pressed="false" title="Mostrar contraseña"><svg id="passwordEye" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div><p><button id="loginBtn" type="submit">Entrar</button></p></form></section>
+<section id="login" class="card login-card hidden"><div class="login-header"><h2 id="loginHeading">Acceso</h2><button class="ghost" type="button" id="backToModes">← Volver</button></div><p class="muted small" id="loginHelp">Introduce tu correo y contraseña de Firebase.</p><form id="loginForm" class="form"><label for="email">Usuario (formato correo)</label><input id="email" type="email" autocomplete="username" required><label for="pass">Contraseña</label><div class="login-password-wrapper"><input id="pass" type="password" autocomplete="current-password" required><button type="button" id="toggleLoginPassword" class="password-visibility" aria-label="Mostrar contraseña" aria-pressed="false" title="Mostrar contraseña"><svg id="passwordEye" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div><p><button id="loginBtn" type="submit">Entrar</button></p></form></section>
 <section id="workerView" class="card hidden worker-panel" aria-label="Confirmación de presencia">
   <span class="worker-tag">Acceso del personal</span>
   <h2 id="workerName">Bienvenido/a</h2>
@@ -76,7 +105,7 @@
 </section>
 <div id="dashboard" class="hidden"><nav class="navtabs" aria-label="Secciones de administración"><button type="button" class="navtab active" id="tabReports">Informes</button><button type="button" class="navtab" id="tabDepartments">Dependencias</button><button type="button" class="navtab" id="tabStaff">Personal</button></nav>
 <section id="manageDepartments" class="manage-section hidden"><div class="manage-grid"><section class="card"><h2>Gestionar dependencias</h2><form id="deptForm"><input id="deptEditId" type="hidden"><label for="deptName">Nombre de la dependencia</label><input id="deptName" maxlength="100" required placeholder="Ej.: SERVICIO DE PREVENCIÓN"><label class="check-row" for="deptActive"><input type="checkbox" id="deptActive" checked><span>Dependencia activa</span></label><div class="manage-row"><button id="deptSave" type="submit">Guardar dependencia</button><button class="ghost" type="button" id="deptCancel">Cancelar edición</button></div></form><div id="deptMessage" class="manage-msg" role="status"></div></section><section class="card"><div class="toolbar"><h2>Dependencias registradas</h2><label class="show-removed"><input type="checkbox" id="showRetiredDeps"> Ver retiradas</label><button class="ghost" type="button" id="deptReload">Actualizar</button></div><div class="tablewrap"><table><thead><tr><th>Dependencia</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="deptRows"></tbody></table></div></section></div></section>
-<section id="manageStaff" class="manage-section hidden"><div class="manage-grid"><section class="card"><h2>Gestionar trabajadores</h2><p class="muted small">Crea aquí el correo y la contraseña del trabajador. Si ya existe, pulsa Editar para modificar su ficha.</p><form id="staffForm"><input type="hidden" id="staffUid"><p id="staffModeLabel" class="mode-note">Nuevo trabajador · Alta de cuenta y ficha</p><label for="staffName">Nombre y apellidos</label><input id="staffName" required maxlength="120"><label for="staffEmail">Correo electrónico</label><input id="staffEmail" type="email" required maxlength="254" autocomplete="off"><div id="newCredentials"><label for="staffPassword">Contraseña inicial</label><input id="staffPassword" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" minlength="6" placeholder="Mínimo 6 caracteres"><p class="help">Contraseña exclusiva para este trabajador. No se guarda en la ficha ni se almacena en el navegador por esta aplicación.</p></div><label for="staffDept">Dependencia</label><select id="staffDept" required><option value="">Selecciona una dependencia</option></select><label class="check-row" for="staffActive"><input type="checkbox" id="staffActive" checked><span>Trabajador activo</span></label><div class="manage-row"><button id="staffSave" type="submit">Crear trabajador</button><button class="ghost" type="button" id="staffCancel">Limpiar formulario</button></div></form><div id="staffMessage" class="manage-msg" role="status"></div></section><section class="card"><div class="toolbar"><h2>Personal registrado</h2><label class="show-removed"><input type="checkbox" id="showRetiredStaff"> Ver retirados</label><button class="ghost" type="button" id="staffReload">Actualizar</button></div><div class="tablewrap"><table><thead><tr><th>Trabajador</th><th>Dependencia</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="staffRows"></tbody></table></div></section></div></section>
+<section id="manageStaff" class="manage-section hidden"><div class="manage-grid"><section class="card"><h2>Gestionar trabajadores</h2><p class="muted small">El correo se utiliza como nombre de usuario. Puedes modificarlo sin cambiar la contraseña ni perder los fichajes.</p><form id="staffForm"><input type="hidden" id="staffUid"><p id="staffModeLabel" class="mode-note">Nuevo trabajador · Alta de cuenta y ficha</p><label for="staffName">Nombre y apellidos</label><input id="staffName" required maxlength="120"><label for="staffEmail">Usuario de acceso (formato correo)</label><input id="staffEmail" type="email" required maxlength="254" autocomplete="off"><div id="newCredentials"><label for="staffPassword">Contraseña inicial</label><input id="staffPassword" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" minlength="6" placeholder="Mínimo 6 caracteres"><p class="help">Contraseña exclusiva para este trabajador. No se guarda en la ficha ni se almacena en el navegador por esta aplicación.</p></div><label for="staffDept">Dependencia</label><select id="staffDept" required><option value="">Selecciona una dependencia</option></select><label class="check-row" for="staffActive"><input type="checkbox" id="staffActive" checked><span>Trabajador activo</span></label><div class="manage-row"><button id="staffSave" type="submit">Crear trabajador</button><button class="ghost" type="button" id="staffCancel">Limpiar formulario</button></div></form><div id="staffMessage" class="manage-msg" role="status"></div></section><section class="card"><div class="toolbar"><h2>Personal registrado</h2><label class="show-removed"><input type="checkbox" id="showRetiredStaff"> Ver retirados</label><button class="ghost" type="button" id="staffReload">Actualizar</button></div><div class="tablewrap"><table><thead><tr><th>Trabajador</th><th>Dependencia</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="staffRows"></tbody></table></div></section></div></section>
 <div id="reportsView" class="report-layout"><aside class="report-sidebar">
 <section class="card"><div class="toolbar"><div><div class="sidebar-title"><h2>Obtener informe</h2></div><p class="header-description muted small">Selecciona un período y una dependencia</p><p class="hidden">Informes de asistencia</p><p class="muted small">Consulta diaria, mensual o por intervalo de fechas · Firebase Firestore</p><p id="adminEmail" class="small muted"></p></div></div>
 <div class="filters">
@@ -101,12 +130,12 @@
 <script type="module">
 import {initializeApp,deleteApp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
 import {getAuth,initializeAuth,inMemoryPersistence,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,deleteUser,signOut} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
-import {getFirestore,doc,getDoc,getDocs,collection,query,where,addDoc,setDoc,updateDoc,serverTimestamp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
+import {getFirestore,doc,getDoc,getDocs,collection,query,where,addDoc,setDoc,updateDoc,runTransaction,serverTimestamp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 const firebaseConfig={apiKey:'AIzaSyAA328jFJgoKmhJc2u-4dmrvgIiDZKVJ-k',authDomain:'control-presencia-fireba-37b8e.firebaseapp.com',projectId:'control-presencia-fireba-37b8e',storageBucket:'control-presencia-fireba-37b8e.firebasestorage.app',messagingSenderId:'199352090992',appId:'1:199352090992:web:f1a2f0a342c80bc3b60fb5'};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);
 let activeUid=null,adminReady=false,report=null,requestVersion=0;
 let employee=null,employeeBusy=false,workerEpoch=0,postLogoutMessage='',workerCloseTimer=null;
-let chosenAccess=null;
+let chosenAccess=null,attemptedLoginId=null;
 const LAST_EMAIL_KEY='cp_firebase_last_email';
 try{$('email').value=localStorage.getItem(LAST_EMAIL_KEY)||''}catch(_){}
 function showAccessPicker(){
@@ -268,7 +297,7 @@ for(const [id,value] of [['tabReports','reports'],['tabDepartments','departments
 function statusNode(active){const e=document.createElement('span');e.className='state'+(active===true?'':' off');e.textContent=active===true?'Activa/o':'Inactiva/o';return e}
 function optionsStaffDepartments(){const sel=$('staffDept'),v=sel.value;sel.replaceChildren();const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='Selecciona una dependencia';sel.appendChild(placeholder);for(const dep of managedDeps){const opt=document.createElement('option');opt.value=dep.id;opt.textContent=dep.name+(dep.active===true?'':' (inactiva)');sel.appendChild(opt)}sel.value=managedDeps.some(d=>d.id===v)?v:''}
 function renderDepartmentList(){const body=$('deptRows');body.replaceChildren();if(!managedDeps.length){const r=document.createElement('tr');tableCell(r,'No hay dependencias.').colSpan=3;body.appendChild(r)}for(const d of managedDeps.filter(d=>d.active===true||$('showRetiredDeps').checked)){const r=document.createElement('tr');tableCell(r,d.name);const s=document.createElement('td');s.appendChild(statusNode(d.active));r.appendChild(s);const td=document.createElement('td');const b=document.createElement('button');b.className='ghost mini';b.type='button';b.textContent='Editar';b.addEventListener('click',()=>{$('deptEditId').value=d.id;$('deptName').value=d.name;$('deptActive').checked=d.active===true;$('deptName').focus();displayManagerMessage('deptMessage','Editando '+d.name)});td.appendChild(b);const x=document.createElement('button');x.type='button';x.className=d.active===true?'danger-icon':'ghost mini';x.textContent=d.active===true?'×':'Restaurar';x.title=d.active===true?'Retirar dependencia':'Restaurar dependencia';x.setAttribute('aria-label',x.title);x.addEventListener('click',async()=>{const linked=managedStaff.filter(p=>p.departmentId===d.id&&p.active===true);if(d.active===true&&linked.length){displayManagerMessage('deptMessage','No puedes retirar esta dependencia: tiene '+linked.length+' trabajador(es) activo(s). Reasígnalos o retíralos primero.',true);return}if(!confirm(d.active===true?'¿Retirar «'+d.name+'»? Desaparecerá del listado activo, conservando su historial.':'¿Restaurar «'+d.name+'»?'))return; x.disabled=true;try{await updateDoc(doc(db,'departments',d.id),{active:d.active!==true});await loadManagement();clearDashboard();displayManagerMessage('deptMessage',d.active===true?'Dependencia retirada.':'Dependencia restaurada.')}catch(e){displayManagerMessage('deptMessage','No se pudo cambiar el estado: '+(e.code||e.message),true)}finally{x.disabled=false}});td.appendChild(x);r.appendChild(td);body.appendChild(r)}}
-function renderStaffList(){const body=$('staffRows');body.replaceChildren();if(!managedStaff.length){const r=document.createElement('tr');tableCell(r,'No hay trabajadores.').colSpan=4;body.appendChild(r)}const deptMap=new Map(managedDeps.map(d=>[d.id,d.name]));for(const p of managedStaff.filter(p=>p.active===true||$('showRetiredStaff').checked)){const r=document.createElement('tr');tableCell(r,p.fullName||p.email||p.id);tableCell(r,deptMap.get(p.departmentId)||'Sin asignar');const td=document.createElement('td');td.appendChild(statusNode(p.active));r.appendChild(td);const action=document.createElement('td'),b=document.createElement('button');b.className='ghost mini';b.type='button';b.textContent='Editar';b.addEventListener('click',()=>{$('staffUid').value=p.id;$('newCredentials').classList.add('hidden');$('staffModeLabel').textContent='Editando ficha existente';$('staffSave').textContent='Guardar cambios';$('staffName').value=p.fullName||'';$('staffEmail').value=p.email||'';$('staffEmail').readOnly=true;$('staffDept').value=p.departmentId||'';$('staffActive').checked=p.active===true;$('staffName').focus();displayManagerMessage('staffMessage','Editando '+(p.fullName||p.email))});action.appendChild(b);const x=document.createElement('button');x.type='button';x.className=p.active===true?'danger-icon':'ghost mini';x.textContent=p.active===true?'×':'Restaurar';x.title=p.active===true?'Retirar trabajador':'Restaurar trabajador';x.setAttribute('aria-label',x.title);x.addEventListener('click',async()=>{if(p.active!==true&&!managedDeps.some(d=>d.id===p.departmentId&&d.active===true)){displayManagerMessage('staffMessage','Asigna primero una dependencia activa para restaurar a esta persona.',true);return}if(!confirm(p.active===true?'¿Retirar a «'+(p.fullName||p.email)+'»? No podrá volver a fichar, pero se conservará el historial.':'¿Restaurar a «'+(p.fullName||p.email)+'»?'))return;x.disabled=true;try{await updateDoc(doc(db,'users',p.id),{active:p.active!==true});await loadManagement();clearDashboard();displayManagerMessage('staffMessage',p.active===true?'Trabajador retirado.':'Trabajador restaurado.')}catch(e){displayManagerMessage('staffMessage','No se pudo cambiar el estado: '+(e.code||e.message),true)}finally{x.disabled=false}});action.appendChild(x);r.appendChild(action);body.appendChild(r)}}
+function renderStaffList(){const body=$('staffRows');body.replaceChildren();if(!managedStaff.length){const r=document.createElement('tr');tableCell(r,'No hay trabajadores.').colSpan=4;body.appendChild(r)}const deptMap=new Map(managedDeps.map(d=>[d.id,d.name]));for(const p of managedStaff.filter(p=>p.active===true||$('showRetiredStaff').checked)){const r=document.createElement('tr');tableCell(r,p.fullName||p.email||p.id);tableCell(r,deptMap.get(p.departmentId)||'Sin asignar');const td=document.createElement('td');td.appendChild(statusNode(p.active));r.appendChild(td);const action=document.createElement('td'),b=document.createElement('button');b.className='ghost mini';b.type='button';b.textContent='Editar';b.addEventListener('click',()=>{$('staffUid').value=p.id;$('newCredentials').classList.add('hidden');$('staffModeLabel').textContent='Editando ficha existente';$('staffSave').textContent='Guardar cambios';$('staffName').value=p.fullName||'';$('staffEmail').value=p.email||'';$('staffEmail').readOnly=false;$('staffDept').value=p.departmentId||'';$('staffActive').checked=p.active===true;$('staffName').focus();displayManagerMessage('staffMessage','Editando '+(p.fullName||p.email))});action.appendChild(b);const x=document.createElement('button');x.type='button';x.className=p.active===true?'danger-icon':'ghost mini';x.textContent=p.active===true?'×':'Restaurar';x.title=p.active===true?'Retirar trabajador':'Restaurar trabajador';x.setAttribute('aria-label',x.title);x.addEventListener('click',async()=>{if(p.active!==true&&!managedDeps.some(d=>d.id===p.departmentId&&d.active===true)){displayManagerMessage('staffMessage','Asigna primero una dependencia activa para restaurar a esta persona.',true);return}if(!confirm(p.active===true?'¿Retirar a «'+(p.fullName||p.email)+'»? No podrá volver a fichar, pero se conservará el historial.':'¿Restaurar a «'+(p.fullName||p.email)+'»?'))return;x.disabled=true;try{await updateDoc(doc(db,'users',p.id),{active:p.active!==true});await loadManagement();clearDashboard();displayManagerMessage('staffMessage',p.active===true?'Trabajador retirado.':'Trabajador restaurado.')}catch(e){displayManagerMessage('staffMessage','No se pudo cambiar el estado: '+(e.code||e.message),true)}finally{x.disabled=false}});action.appendChild(x);r.appendChild(action);body.appendChild(r)}}
 async function loadManagement(){if(!adminReady)return;const uid=activeUid;try{const [d,u]=await Promise.all([getDocs(collection(db,'departments')),getDocs(collection(db,'users'))]);if(!adminReady||activeUid!==uid)return;managedDeps=d.docs.map(doc=>({id:doc.id,...doc.data()})).sort((a,b)=>(a.name||'').localeCompare(b.name||'','es'));managedStaff=u.docs.map(doc=>({id:doc.id,...doc.data()})).filter(p=>p.role==='employee').sort((a,b)=>(a.fullName||'').localeCompare(b.fullName||'','es'));renderDepartmentList();optionsStaffDepartments();renderStaffList()}catch(e){displayManagerMessage(currentSection==='departments'?'deptMessage':'staffMessage','No se pudieron cargar los datos: '+(e.code||e.message),true)}}
 function resetDeptForm(){$('deptForm').reset();$('deptEditId').value='';$('deptActive').checked=true;displayManagerMessage('deptMessage','')}
 function resetStaffForm(){$('staffForm').reset();$('staffUid').value='';$('staffActive').checked=true;$('staffEmail').readOnly=false;$('newCredentials').classList.remove('hidden');$('staffModeLabel').textContent='Nuevo trabajador · Alta de cuenta y ficha';$('staffSave').textContent='Crear trabajador';displayManagerMessage('staffMessage','')}
@@ -284,9 +313,26 @@ $('staffForm').addEventListener('submit',async e=>{
   try{
     if(id){
       const known=managedStaff.find(u=>u.id===id);if(!known)throw Error('Ficha no encontrada. Actualiza la lista.');
-      if(email!==known.email)throw Error('El correo no se puede cambiar aquí; actualízalo en Firebase Authentication.');
-      await updateDoc(doc(db,'users',id),{fullName:name,departmentId,active});
-      displayManagerMessage('staffMessage','Ficha actualizada correctamente.');
+      if(email!==known.email){
+        if(!/^[^\s@/]+@[^\s@/]+\.[^\s@/]+$/.test(email))throw Error('El usuario debe tener formato de correo electrónico.');
+        if(managedStaff.some(u=>u.id!==id&&(u.email===email||u.authEmail===email)))throw Error('Este usuario está asignado a otro trabajador.');
+        const oldId=(known.email||'').trim().toLowerCase();
+        const originalAuthEmail=(known.authEmail||known.email||'').trim().toLowerCase();
+        const oldAlias=doc(db,'loginAliases',oldId),newAlias=doc(db,'loginAliases',email),userRef=doc(db,'users',id);
+        await runTransaction(db,async tx=>{
+          const newAliasDoc=await tx.get(newAlias);
+          const oldAliasDoc=oldId!==email?await tx.get(oldAlias):null;
+          if(newAliasDoc.exists()&&newAliasDoc.data().uid!==id)throw Error('Este usuario ya está reservado para otra cuenta.');
+          // Actualización de alias y ficha en una sola transacción.
+          tx.set(newAlias,{uid:id,authEmail:originalAuthEmail});
+          if(oldAliasDoc&&oldAliasDoc.exists()&&oldAliasDoc.data().uid===id)tx.delete(oldAlias);
+          tx.update(userRef,{fullName:name,email,authEmail:originalAuthEmail,departmentId,active});
+        });
+        displayManagerMessage('staffMessage','Usuario de acceso modificado. El trabajador utilizará el nuevo usuario con su contraseña habitual.');
+      }else{
+        await updateDoc(doc(db,'users',id),{fullName:name,departmentId,active});
+        displayManagerMessage('staffMessage','Ficha actualizada correctamente.');
+      }
     }else{
       const password=$('staffPassword').value;
       if(password.length<6)throw Error('Firebase exige como mínimo 6 caracteres en la contraseña.');
@@ -314,7 +360,7 @@ $('staffForm').addEventListener('submit',async e=>{
     }
     $('staffForm').reset();$('staffUid').value='';$('newCredentials').classList.remove('hidden');$('staffEmail').readOnly=false;$('staffModeLabel').textContent='Nuevo trabajador · Alta de cuenta y ficha';$('staffSave').textContent='Crear trabajador';$('staffActive').checked=true;
     await loadManagement();clearDashboard();
-  }catch(err){displayManagerMessage('staffMessage','No se completó el alta: '+(err.code||err.message),true)}
+  }catch(err){displayManagerMessage('staffMessage','No se pudieron guardar los cambios: '+(err.code||err.message)+(err.code==='permission-denied'?' (revisa la regla loginAliases de Firestore).':''),true)}
   finally{b.disabled=false;$('staffPassword').value=''}
 });
 
@@ -339,7 +385,27 @@ loginPasswordToggle.addEventListener('click',()=>{
   try{loginPassword.setSelectionRange(start,end)}catch(_){}
 });
 
-$('loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!chosenAccess){status('Selecciona primero Administrador o Trabajador.',true);return;}$('loginBtn').disabled=true;hideStatus();try{await signInWithEmailAndPassword(auth,$('email').value.trim(),$('pass').value);try{localStorage.setItem(LAST_EMAIL_KEY,$('email').value.trim())}catch(_){}}catch(err){status('No se pudo iniciar sesión: '+(err.code||'error'),true)}finally{$('loginBtn').disabled=false;$('pass').value='';setPasswordVisibility(false)}});
+$('loginForm').addEventListener('submit',async e=>{
+  e.preventDefault();if(!chosenAccess){status('Selecciona primero Administrador o Trabajador.',true);return;}
+  $('loginBtn').disabled=true;hideStatus();
+  const entered=$('email').value.trim().toLowerCase();attemptedLoginId=entered;
+  try{
+    let authEmail=entered;
+    // El alias se consulta solo por documento; no se descargan listados de usuarios.
+    if(chosenAccess==='worker'){
+      try{
+        const alias=await getDoc(doc(db,'loginAliases',entered));
+        if(alias.exists()&&typeof alias.data().authEmail==='string')authEmail=alias.data().authEmail;
+      }catch(lookupError){
+        if(lookupError.code!=='permission-denied')throw lookupError;
+        // Compatibilidad con el despliegue anterior mientras se añaden las reglas.
+      }
+    }
+    await signInWithEmailAndPassword(auth,authEmail,$('pass').value);
+    try{localStorage.setItem(LAST_EMAIL_KEY,entered)}catch(_){}
+  }catch(err){status('No se pudo iniciar sesión: '+(err.code||err.message||'error'),true)}
+  finally{$('loginBtn').disabled=false;$('pass').value='';setPasswordVisibility(false)}
+});
 $('logout').addEventListener('click',()=>signOut(auth));$('refresh').addEventListener('click',refresh);
 onAuthStateChanged(auth,async user=>{
  if(workerCloseTimer!==null){clearInterval(workerCloseTimer);workerCloseTimer=null;}
@@ -368,6 +434,13 @@ onAuthStateChanged(auth,async user=>{
    const profile=await getDoc(doc(db,'users',uid));
    if(epoch!==workerEpoch||activeUid!==uid)return;
    if(!profile.exists())throw Error('No existe una ficha autorizada para esta cuenta.');
+   // A partir de un cambio de alias, el correo interno de Authentication deja de ser
+   // un identificador de acceso válido en esta interfaz, aunque Firebase lo conserve.
+   const currentAlias=String(profile.data().email||'').trim().toLowerCase();
+   if(attemptedLoginId&&currentAlias!==attemptedLoginId){
+     postLogoutMessage='Este usuario de acceso ha cambiado. Utiliza el nuevo usuario asignado por el administrador.';
+     await signOut(auth);return;
+   }
    await enterWorker(user,profile.data(),epoch);
  }catch(err){
    if(epoch!==workerEpoch)return;
