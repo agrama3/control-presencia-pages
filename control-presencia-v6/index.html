@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Control de presencia | Administración V5</title>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Control de presencia | Acceso unificado V6.1</title>
 <style>
 :root{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#19293e;background:#f3f6fb}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1440px;padding:26px 18px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;gap:14px}.brand{display:flex;align-items:center;gap:12px}.mark{width:44px;height:44px;border-radius:12px;background:#172a45;color:#fff;display:grid;place-items:center;font-size:24px}.muted{color:#687b92}.small{font-size:13px}.head{margin:0;font-size:25px;letter-spacing:-.04em}.sub{margin:4px 0 0;font-size:14px}.card{background:#fff;border:1px solid #e1e8f1;border-radius:18px;padding:22px;margin-top:22px;box-shadow:0 3px 14px #19293e06}h2{font-size:19px;margin:0 0 12px}.hidden{display:none!important}label{font-size:14px;font-weight:650;display:block;margin:14px 0 6px}input{width:100%;padding:13px;border:1px solid #cad5e2;border-radius:10px;font-size:16px}button{background:#244f89;color:white;border:0;border-radius:11px;padding:12px 19px;font-size:14px;font-weight:650;cursor:pointer}button.ghost{background:#eaf0f8;color:#25476c}button:disabled{opacity:.55;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #9abef5;outline-offset:2px}.form{max-width:450px}.notice{padding:13px 15px;background:#eaf2fb;border-radius:12px;margin-top:16px;white-space:pre-wrap}.notice.error{background:#fff0f0;color:#ab2631}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.metric{padding:18px;background:white;border:1px solid #e1e8f1;border-radius:16px}.metric strong{display:block;font-size:36px;letter-spacing:-.04em;margin-top:6px}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.tag{display:inline-block;border-radius:99px;font-size:12px;padding:5px 10px;background:#e5f4ec;color:#187248;font-weight:650}.tag.pending{background:#fff3df;color:#996415}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:13px 11px;border-bottom:1px solid #eaf0f6}th{color:#728196;font-size:12px;text-transform:uppercase;letter-spacing:.05em}tbody tr:hover{background:#f8fafd}.fineprint{font-size:13px;color:#63748b;line-height:1.55;margin-top:20px}a{color:#244f89}@media(max-width:670px){.cards{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1 / -1}.top{align-items:flex-start}.head{font-size:21px}}
 
@@ -46,7 +46,7 @@
 .worker-check:disabled{background:#cfe8dc;color:#5f8b78;cursor:not-allowed}
 #workerStatus{margin:15px 0;text-align:left}
 @media(max-width:700px){.worker-panel{padding:24px 17px}}
-</style></head><body><div class="wrap"><div class="top"><div class="brand"><div class="mark">✓</div><div><h1 class="head">Control de presencia</h1><p class="sub muted">Acceso único · Firebase Spark · V6</p></div></div><button id="logout" class="ghost hidden" type="button">Salir</button></div>
+</style></head><body><div class="wrap"><div class="top"><div class="brand"><div class="mark">✓</div><div><h1 class="head">Control de presencia</h1><p class="sub muted">Acceso único · Firebase Spark · V6.1</p></div></div><button id="logout" class="ghost hidden" type="button">Salir</button></div>
 <section id="login" class="card"><h2>Acceso a Control de presencia</h2><p class="muted small">Introduce tu correo y contraseña. El sistema abrirá automáticamente el panel que te corresponda.</p><form id="loginForm" class="form"><label for="email">Correo electrónico</label><input id="email" type="email" autocomplete="username" required><label for="pass">Contraseña</label><input id="pass" type="password" autocomplete="current-password" required><p><button id="loginBtn" type="submit">Entrar</button></p></form></section>
 <section id="workerView" class="card hidden worker-panel" aria-label="Confirmación de presencia">
   <span class="worker-tag">Acceso del personal</span>
@@ -89,12 +89,34 @@ import {getFirestore,doc,getDoc,getDocs,collection,query,where,addDoc,setDoc,upd
 const firebaseConfig={apiKey:'AIzaSyAA328jFJgoKmhJc2u-4dmrvgIiDZKVJ-k',authDomain:'control-presencia-fireba-37b8e.firebaseapp.com',projectId:'control-presencia-fireba-37b8e',storageBucket:'control-presencia-fireba-37b8e.firebasestorage.app',messagingSenderId:'199352090992',appId:'1:199352090992:web:f1a2f0a342c80bc3b60fb5'};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);
 let activeUid=null,adminReady=false,report=null,requestVersion=0;
-let employee=null,employeeBusy=false,workerEpoch=0,postLogoutMessage='';
+let employee=null,employeeBusy=false,workerEpoch=0,postLogoutMessage='',workerCloseTimer=null;
 const LAST_EMAIL_KEY='cp_firebase_last_email';
 try{$('email').value=localStorage.getItem(LAST_EMAIL_KEY)||''}catch(_){}
 function workerMessage(message,isError=false){const e=$('workerStatus');e.textContent=message;e.style.borderColor=isError?'#f3b1b1':'#dde8f5';e.style.color=isError?'#ad2338':'#42566f'}
 function workerReady(ready){$('checkBtn').disabled=!ready||employeeBusy}
-async function logoutWorker(message){postLogoutMessage=message;await signOut(auth)}
+async function logoutWorker(message){
+ if(workerCloseTimer!==null){clearInterval(workerCloseTimer);workerCloseTimer=null;}
+ postLogoutMessage=message;
+ await signOut(auth);
+}
+function scheduleWorkerLogout(message){
+ // La pantalla permanece visible cinco segundos antes de volver al acceso.
+ if(workerCloseTimer!==null){clearInterval(workerCloseTimer);workerCloseTimer=null;}
+ const currentEpoch=workerEpoch;
+ let remaining=5;
+ employeeBusy=true;
+ workerReady(false);
+ const showCountdown=()=>workerMessage(message+' Volviendo a la pantalla de acceso en '+remaining+' segundos…');
+ showCountdown();
+ workerCloseTimer=setInterval(async()=>{
+   if(currentEpoch!==workerEpoch){clearInterval(workerCloseTimer);workerCloseTimer=null;return;}
+   remaining--;
+   if(remaining>0){showCountdown();return;}
+   clearInterval(workerCloseTimer);workerCloseTimer=null;
+   try{await logoutWorker(message+' Sesión cerrada automáticamente.');}
+   catch(err){workerMessage('La sesión no se pudo cerrar automáticamente. Pulsa «Salir».',true);$('logout').disabled=false;}
+ },1000);
+}
 async function readWorkerAttendance(uid,epoch){
  const localDate=madridDay();const id=uid+'_'+localDate;
  const result=await getDoc(doc(db,'attendance',id));
@@ -119,7 +141,7 @@ async function enterWorker(user,profile,epoch){
  $('workerDate').textContent=madridDay();
  $('workerView').classList.remove('hidden');
  const already=await readWorkerAttendance(user.uid,epoch);
- if(already&&epoch===workerEpoch)await logoutWorker('Ya tenías registrada la presencia de hoy. La sesión se ha cerrado automáticamente.');
+ if(already&&epoch===workerEpoch) scheduleWorkerLogout('Ya habías confirmado tu presencia de hoy.');
 }
 $('checkBtn').addEventListener('click',async()=>{
  if(!employee||employeeBusy)return;
@@ -131,12 +153,12 @@ $('checkBtn').addEventListener('click',async()=>{
   if(epoch!==workerEpoch)return;
   const saved=await getDoc(doc(db,'attendance',id));
   if(!saved.exists()||saved.data().userId!==uid)throw Error('La comprobación del fichaje no se completó.');
-  await logoutWorker('✓ Presencia confirmada correctamente. La sesión se ha cerrado.');
+  scheduleWorkerLogout('✓ Presencia confirmada y guardada correctamente.');
  }catch(err){
   if(epoch!==workerEpoch)return;
   workerMessage('No se pudo registrar o verificar la presencia: '+(err.code||err.message)+'. Comprueba el registro antes de repetir.',true);
-  try{if(await readWorkerAttendance(uid,epoch))await logoutWorker('Tu presencia ya consta registrada; sesión cerrada.')}catch(_){workerReady(false)}
- }finally{employeeBusy=false}
+  try{if(await readWorkerAttendance(uid,epoch))scheduleWorkerLogout('Tu presencia ya consta registrada y verificada.')}catch(_){workerReady(false)}
+ }finally{if(workerCloseTimer===null)employeeBusy=false}
 });
 const SPAIN_TZ='Europe/Madrid';
 const madridDay=(date=new Date())=>{
@@ -263,6 +285,7 @@ $('staffForm').addEventListener('submit',async e=>{
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginBtn').disabled=true;hideStatus();try{await signInWithEmailAndPassword(auth,$('email').value.trim(),$('pass').value);try{localStorage.setItem(LAST_EMAIL_KEY,$('email').value.trim())}catch(_){}}catch(err){status('No se pudo iniciar sesión: '+(err.code||'error'),true)}finally{$('loginBtn').disabled=false;$('pass').value=''}});
 $('logout').addEventListener('click',()=>signOut(auth));$('refresh').addEventListener('click',refresh);
 onAuthStateChanged(auth,async user=>{
+ if(workerCloseTimer!==null){clearInterval(workerCloseTimer);workerCloseTimer=null;}
  const uid=user?.uid||null,epoch=++workerEpoch;
  activeUid=uid;adminReady=false;employee=null;employeeBusy=false;workerReady(false);
  ++requestVersion;clearDashboard();currentSection='reports';
