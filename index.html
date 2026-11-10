@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Control de presencia | Acceso unificado V6.1</title>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Control de presencia | V6.3</title>
 <style>
 :root{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#19293e;background:#f3f6fb}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1440px;padding:26px 18px;margin:0 auto}.top{display:flex;justify-content:space-between;align-items:center;gap:14px}.brand{display:flex;align-items:center;gap:12px}.mark{width:44px;height:44px;border-radius:12px;background:#172a45;color:#fff;display:grid;place-items:center;font-size:24px}.muted{color:#687b92}.small{font-size:13px}.head{margin:0;font-size:25px;letter-spacing:-.04em}.sub{margin:4px 0 0;font-size:14px}.card{background:#fff;border:1px solid #e1e8f1;border-radius:18px;padding:22px;margin-top:22px;box-shadow:0 3px 14px #19293e06}h2{font-size:19px;margin:0 0 12px}.hidden{display:none!important}label{font-size:14px;font-weight:650;display:block;margin:14px 0 6px}input{width:100%;padding:13px;border:1px solid #cad5e2;border-radius:10px;font-size:16px}button{background:#244f89;color:white;border:0;border-radius:11px;padding:12px 19px;font-size:14px;font-weight:650;cursor:pointer}button.ghost{background:#eaf0f8;color:#25476c}button:disabled{opacity:.55;cursor:not-allowed}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #9abef5;outline-offset:2px}.form{max-width:450px}.notice{padding:13px 15px;background:#eaf2fb;border-radius:12px;margin-top:16px;white-space:pre-wrap}.notice.error{background:#fff0f0;color:#ab2631}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.metric{padding:18px;background:white;border:1px solid #e1e8f1;border-radius:16px}.metric strong{display:block;font-size:36px;letter-spacing:-.04em;margin-top:6px}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.tag{display:inline-block;border-radius:99px;font-size:12px;padding:5px 10px;background:#e5f4ec;color:#187248;font-weight:650}.tag.pending{background:#fff3df;color:#996415}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:13px 11px;border-bottom:1px solid #eaf0f6}th{color:#728196;font-size:12px;text-transform:uppercase;letter-spacing:.05em}tbody tr:hover{background:#f8fafd}.fineprint{font-size:13px;color:#63748b;line-height:1.55;margin-top:20px}a{color:#244f89}@media(max-width:670px){.cards{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1 / -1}.top{align-items:flex-start}.head{font-size:21px}}
 
@@ -46,8 +46,24 @@
 .worker-check:disabled{background:#cfe8dc;color:#5f8b78;cursor:not-allowed}
 #workerStatus{margin:15px 0;text-align:left}
 @media(max-width:700px){.worker-panel{padding:24px 17px}}
-</style></head><body><div class="wrap"><div class="top"><div class="brand"><div class="mark">✓</div><div><h1 class="head">Control de presencia</h1><p class="sub muted">Acceso único · Firebase Spark · V6.1</p></div></div><button id="logout" class="ghost hidden" type="button">Salir</button></div>
-<section id="login" class="card"><h2>Acceso a Control de presencia</h2><p class="muted small">Introduce tu correo y contraseña. El sistema abrirá automáticamente el panel que te corresponda.</p><form id="loginForm" class="form"><label for="email">Correo electrónico</label><input id="email" type="email" autocomplete="username" required><label for="pass">Contraseña</label><input id="pass" type="password" autocomplete="current-password" required><p><button id="loginBtn" type="submit">Entrar</button></p></form></section>
+
+/* V6.2: selección explícita del tipo de acceso */
+.access-picker{margin:22px auto 0;max-width:850px}
+.access-picker h2{margin-bottom:5px}
+.access-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:20px}
+.access-option{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:24px;background:#fff;border:1px solid #dbe4f0;border-radius:15px;color:#19293e;text-align:left;min-height:168px}
+.access-option:hover{border-color:#244f89;background:#f6f9fd}
+.access-option .access-icon{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:#eaf0f8;color:#244f89;font-size:23px}
+.access-option strong{font-size:18px}
+.access-option span:last-child{font-size:13px;color:#64748b;font-weight:400;line-height:1.5}
+.login-card{max-width:700px;margin:22px auto 0}
+.login-header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#backToModes{padding:9px 13px}
+@media(max-width:600px){.access-options{grid-template-columns:1fr}.access-option{min-height:140px}}
+@media print{#accessPicker{display:none!important}}
+.login-password-wrapper{position:relative;width:100%;max-width:100%}.login-password-wrapper input{width:100%;padding-right:55px!important}.password-visibility{position:absolute;right:5px;top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;width:43px;height:40px;padding:0;border:0;background:transparent;color:#385675;border-radius:9px;cursor:pointer}.password-visibility:hover{background:#eaf0f8}.password-visibility:focus-visible{outline:2px solid #244f89;outline-offset:1px}</style></head><body><div class="wrap"><div class="top"><div class="brand"><div class="mark">✓</div><div><h1 class="head">Control de presencia</h1><p class="sub muted">Firebase Spark · V6.3</p></div></div><button id="logout" class="ghost hidden" type="button">Salir</button></div>
+<section id="accessPicker" class="card access-picker"><h2>¿Cómo quieres acceder?</h2><p class="muted small">Selecciona tu tipo de acceso para continuar.</p><div class="access-options"><button type="button" class="access-option" id="chooseAdmin"><span class="access-icon">♙</span><strong>Administrador</strong><span>Gestionar personal, dependencias e informes de asistencia</span></button><button type="button" class="access-option" id="chooseWorker"><span class="access-icon">✓</span><strong>Trabajador</strong><span>Confirmar tu presencia diaria en el puesto de trabajo</span></button></div></section>
+<section id="login" class="card login-card hidden"><div class="login-header"><h2 id="loginHeading">Acceso</h2><button class="ghost" type="button" id="backToModes">← Volver</button></div><p class="muted small" id="loginHelp">Introduce tu correo y contraseña de Firebase.</p><form id="loginForm" class="form"><label for="email">Correo electrónico</label><input id="email" type="email" autocomplete="username" required><label for="pass">Contraseña</label><div class="login-password-wrapper"><input id="pass" type="password" autocomplete="current-password" required><button type="button" id="toggleLoginPassword" class="password-visibility" aria-label="Mostrar contraseña" aria-pressed="false" title="Mostrar contraseña"><svg id="passwordEye" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div><p><button id="loginBtn" type="submit">Entrar</button></p></form></section>
 <section id="workerView" class="card hidden worker-panel" aria-label="Confirmación de presencia">
   <span class="worker-tag">Acceso del personal</span>
   <h2 id="workerName">Bienvenido/a</h2>
@@ -90,8 +106,28 @@ const firebaseConfig={apiKey:'AIzaSyAA328jFJgoKmhJc2u-4dmrvgIiDZKVJ-k',authDomai
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);
 let activeUid=null,adminReady=false,report=null,requestVersion=0;
 let employee=null,employeeBusy=false,workerEpoch=0,postLogoutMessage='',workerCloseTimer=null;
+let chosenAccess=null;
 const LAST_EMAIL_KEY='cp_firebase_last_email';
 try{$('email').value=localStorage.getItem(LAST_EMAIL_KEY)||''}catch(_){}
+function showAccessPicker(){
+  chosenAccess=null;
+  $('accessPicker').classList.remove('hidden');
+  $('login').classList.add('hidden');
+  $('pass').value='';
+}
+function selectAccess(type){
+  chosenAccess=type;
+  $('accessPicker').classList.add('hidden');
+  $('login').classList.remove('hidden');
+  $('loginHeading').textContent=type==='admin'?'Acceso del administrador':'Acceso del trabajador';
+  $('loginHelp').textContent=type==='admin'?'Introduce las credenciales del administrador de Firebase.':'Introduce tu correo y contraseña de trabajador.';
+  $('pass').value='';
+  $('email').focus();
+}
+$('chooseAdmin').addEventListener('click',()=>selectAccess('admin'));
+$('chooseWorker').addEventListener('click',()=>selectAccess('worker'));
+$('backToModes').addEventListener('click',()=>{hideStatus();showAccessPicker()});
+
 function workerMessage(message,isError=false){const e=$('workerStatus');e.textContent=message;e.style.borderColor=isError?'#f3b1b1':'#dde8f5';e.style.color=isError?'#ad2338':'#42566f'}
 function workerReady(ready){$('checkBtn').disabled=!ready||employeeBusy}
 async function logoutWorker(message){
@@ -282,7 +318,28 @@ $('staffForm').addEventListener('submit',async e=>{
   finally{b.disabled=false;$('staffPassword').value=''}
 });
 
-$('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginBtn').disabled=true;hideStatus();try{await signInWithEmailAndPassword(auth,$('email').value.trim(),$('pass').value);try{localStorage.setItem(LAST_EMAIL_KEY,$('email').value.trim())}catch(_){}}catch(err){status('No se pudo iniciar sesión: '+(err.code||'error'),true)}finally{$('loginBtn').disabled=false;$('pass').value=''}});
+
+// Mostrar/ocultar la contraseña en los dos tipos de acceso. No se almacena.
+const loginPassword=$('pass');
+const loginPasswordToggle=$('toggleLoginPassword');
+const loginPasswordEye=$('passwordEye');
+function setPasswordVisibility(visible){
+  loginPassword.type=visible?'text':'password';
+  loginPasswordToggle.setAttribute('aria-label',visible?'Ocultar contraseña':'Mostrar contraseña');
+  loginPasswordToggle.setAttribute('title',visible?'Ocultar contraseña':'Mostrar contraseña');
+  loginPasswordToggle.setAttribute('aria-pressed',String(visible));
+  loginPasswordEye.innerHTML=visible
+    ? '<path d="m3 3 18 18"/><path d="M10.6 5.1A11 11 0 0 1 12 5c6.4 0 10 7 10 7a15.7 15.7 0 0 1-4 4.7"/><path d="M6.4 6.4C3.6 8.3 2 12 2 12s3.6 7 10 7c1.8 0 3.4-.5 4.8-1.2"/><path d="M10 10a3 3 0 0 0 4 4"/>'
+    : '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>';
+}
+loginPasswordToggle.addEventListener('click',()=>{
+  const start=loginPassword.selectionStart,end=loginPassword.selectionEnd;
+  setPasswordVisibility(loginPassword.type==='password');
+  loginPassword.focus({preventScroll:true});
+  try{loginPassword.setSelectionRange(start,end)}catch(_){}
+});
+
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!chosenAccess){status('Selecciona primero Administrador o Trabajador.',true);return;}$('loginBtn').disabled=true;hideStatus();try{await signInWithEmailAndPassword(auth,$('email').value.trim(),$('pass').value);try{localStorage.setItem(LAST_EMAIL_KEY,$('email').value.trim())}catch(_){}}catch(err){status('No se pudo iniciar sesión: '+(err.code||'error'),true)}finally{$('loginBtn').disabled=false;$('pass').value='';setPasswordVisibility(false)}});
 $('logout').addEventListener('click',()=>signOut(auth));$('refresh').addEventListener('click',refresh);
 onAuthStateChanged(auth,async user=>{
  if(workerCloseTimer!==null){clearInterval(workerCloseTimer);workerCloseTimer=null;}
@@ -291,9 +348,10 @@ onAuthStateChanged(auth,async user=>{
  ++requestVersion;clearDashboard();currentSection='reports';
  $('reportsView').classList.remove('hidden');$('manageDepartments').classList.add('hidden');$('manageStaff').classList.add('hidden');
  $('dashboard').classList.add('hidden');$('workerView').classList.add('hidden');
- $('login').classList.toggle('hidden',!!user);$('logout').classList.toggle('hidden',!user);
+ $('login').classList.add('hidden');$('accessPicker').classList.add('hidden');$('logout').classList.toggle('hidden',!user);
  if(!user){
    $('pass').value='';try{$('email').value=localStorage.getItem(LAST_EMAIL_KEY)||$('email').value}catch(_){}
+   showAccessPicker();
    if(postLogoutMessage){status(postLogoutMessage);postLogoutMessage=''}
    return;
  }
@@ -302,9 +360,11 @@ onAuthStateChanged(auth,async user=>{
    const admin=await getDoc(doc(db,'admins',uid));
    if(epoch!==workerEpoch||activeUid!==uid)return;
    if(admin.exists()&&admin.data().active===true){
+     if(chosenAccess==='worker'){postLogoutMessage='Esta cuenta es de administrador. Selecciona «Administrador» para entrar.';await signOut(auth);return;}
      adminReady=true;$('login').classList.add('hidden');$('dashboard').classList.remove('hidden');$('adminEmail').textContent=user.email||'';
      await refresh();return;
    }
+   if(chosenAccess==='admin'){postLogoutMessage='Esta cuenta es de trabajador. Selecciona «Trabajador» para entrar.';await signOut(auth);return;}
    const profile=await getDoc(doc(db,'users',uid));
    if(epoch!==workerEpoch||activeUid!==uid)return;
    if(!profile.exists())throw Error('No existe una ficha autorizada para esta cuenta.');
