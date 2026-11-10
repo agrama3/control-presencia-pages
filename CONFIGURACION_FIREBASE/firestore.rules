@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  function signedIn() { return request.auth != null; }
+  function isAdmin() {
+   return signedIn()
+    && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+    && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
+  }
+  function pad2(n) { return n < 10 ? '0' + string(n) : string(n); }
+
+  // Horario oficial peninsular: CET/CEST. El cambio ocurre el último
+  // domingo de marzo/octubre a las 01:00 UTC. Reglas evaluadas con hora servidor.
+  function lastSunday(month) {
+   return timestamp.date(request.time.year(), month, 31)
+     - duration.value(timestamp.date(request.time.year(), month, 31).dayOfWeek() % 7, 'd');
+  }
+  function summerTime() {
+   return request.time >= lastSunday(3) + duration.value(1, 'h')
+       && request.time < lastSunday(10) + duration.value(1, 'h');
+  }
+  function madridNow() {
+   return request.time + duration.value(summerTime() ? 2 : 1, 'h');
+  }
+  function localDay() {
+   return string(madridNow().year()) + '-' + pad2(madridNow().month()) + '-' + pad2(madridNow().day());
+  }
+  function myEmployee() {
+   return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+  }
+  match /admins/{uid} {
+    allow get: if signedIn() && request.auth.uid == uid;
+    allow list, create, update, delete: if false;
+  }
+  match /departments/{departmentId} {
+    allow read: if signedIn();
+    allow create, update: if isAdmin();
+    allow delete: if false;
+  }
+  match /users/{uid} {
+    allow get: if isAdmin() || (signedIn() && request.auth.uid == uid);
+    allow list: if isAdmin();
+    allow create: if isAdmin()
+      && request.resource.data.keys().hasOnly(['fullName','email','departmentId','role','active'])
+      && request.resource.data.role == 'employee'
+      && request.resource.data.active is bool;
+    allow update: if isAdmin()
+      && resource.data.role == 'employee'
+      && request.resource.data.role == resource.data.role
+      && request.resource.data.email == resource.data.email
+      && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['fullName','departmentId','active']);
+    allow delete: if false;
+  }
+  match /attendance/{attendanceId} {
+    // Leer el documento del día aunque todavía no exista.
+    allow get: if isAdmin() || (signedIn() && attendanceId == request.auth.uid + '_' + localDay());
+    allow list: if isAdmin();
+    allow create: if signedIn()
+      && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+      && myEmployee().active == true
+      && myEmployee().role == 'employee'
+      && myEmployee().departmentId is string
+      && exists(/databases/$(database)/documents/departments/$(myEmployee().departmentId))
+      && get(/databases/$(database)/documents/departments/$(myEmployee().departmentId)).data.active == true
+      && attendanceId == request.auth.uid + '_' + localDay()
+      && request.resource.data.keys().hasAll(['userId','departmentId','workDate','checkedAt'])
+      && request.resource.data.keys().hasOnly(['userId','departmentId','workDate','checkedAt'])
+      && request.resource.data.userId == request.auth.uid
+      && request.resource.data.departmentId == myEmployee().departmentId
+      && request.resource.data.workDate == localDay()
+      && request.resource.data.checkedAt == request.time;
+    allow update, delete: if false;
+  }
+  match /{document=**} { allow read, write: if false; }
+ }
+}
