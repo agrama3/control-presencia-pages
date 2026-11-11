@@ -90,7 +90,7 @@ html,body {background:#e0e7f0;}
   .presence-header {background:#fff;border:0;box-shadow:none;}
   .presence-header .head {color:#19293e;}
 }
-.situation-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:end}.situation-form label{margin:0 0 6px}.situation-form select,.situation-form input{display:block;width:100%;min-width:0;max-width:100%;box-sizing:border-box;height:44px;padding:11px;border:1px solid #cad5e2;border-radius:9px;background:#fff;color:#19293e;min-height:43px}.sit-buttons{display:flex;gap:8px;grid-column:1/-1;flex-wrap:wrap}.sit-buttons button{padding:10px 15px}@media(max-width:950px){.situation-form{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.situation-form{grid-template-columns:1fr}}@media print{.no-print{display:none!important}}
+.situation-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:end}.situation-form label{margin:0 0 6px}.situation-form select,.situation-form input{display:block;width:100%;min-width:0;max-width:100%;box-sizing:border-box;height:44px;padding:11px;border:1px solid #cad5e2;border-radius:9px;background:#fff;color:#19293e;min-height:43px;font-size:14px!important;font-family:inherit;line-height:1.2}.situation-form input[type="date"]::-webkit-datetime-edit,.guard-controls input[type="date"]::-webkit-datetime-edit{font:inherit}.situation-form input[type="date"]::-webkit-date-and-time-value,.guard-controls input[type="date"]::-webkit-date-and-time-value{min-height:0}.sit-buttons{display:flex;gap:8px;grid-column:1/-1;flex-wrap:wrap}.sit-buttons button{padding:10px 15px}@media(max-width:950px){.situation-form{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.situation-form{grid-template-columns:1fr}}@media print{.no-print{display:none!important}}
 
 /* V6.7 — pestaña de guardias y saldos */
 #manageGuards.hidden{display:none!important}
@@ -182,7 +182,6 @@ html,body {background:#e0e7f0;}
           <div class="wide"><label for="guardEntryType">Tipo de registro</label><select id="guardEntryType"><option value="guardia">Guardia realizada</option><option value="agraciable">Conceder días agraciables</option></select></div>
           <div><label for="guardDate" id="guardDateLabel">Fecha de guardia realizada</label><input type="date" id="guardDate" required></div>
           <div id="graciousQuantityField" class="hidden"><label for="graciousQuantity">Número de días agraciables</label><input type="number" id="graciousQuantity" min="1" max="365" step="1" value="1"></div>
-          <div class="wide"><label for="guardNote">Referencia (opcional)</label><input id="guardNote" maxlength="120" placeholder="Ej.: Guardia de servicio"></div>
           <div class="wide"><button type="submit" id="guardSave">+ Registrar guardia y generar 2 días</button></div>
         </form>
         <div id="guardMessage" class="manage-msg" role="status" aria-live="polite"></div>
@@ -458,6 +457,8 @@ try{
  const situations=new Map();for(const ds of sitSnap.docs){const item=ds.data();if(typeof item.userId==='string'&&typeof item.workDate==='string'&&SITUATION_LABELS[item.type])situations.set(item.userId+'_'+item.workDate,item)}
  const guardsByDate=new Map();for(const ds of guardSnap.docs){const item=ds.data();if(typeof item.userId==='string'&&typeof item.workDate==='string')guardsByDate.set(item.userId+'_'+item.workDate,item)}
  const rows=[];for(let day=interval.start;day<=interval.end;day=addDays(day,1)){for(const p of people){const key=p.id+'_'+day;const a=records.get(key);const situation=situations.get(key);rows.push({id:p.id,date:day,name:p.fullName||p.email||p.id,email:p.email||'',dept:deptMap.get(p.departmentId)||'Dependencia no encontrada',status:a?'Presente':(situation?SITUATION_LABELS[situation.type]:(guardsByDate.has(key)?'Guardia registrada':'Sin registro')),time:a?madridTime(a.checkedAt):'—',active:p.active===true?'Activo':'Inactivo',type:situation?.type||'',hasAttendance:!!a,guardia:guardsByDate.has(key),guardNote:guardsByDate.get(key)?.note||''})}}
+ const statusPriority=row=>row.status==='Presente'?0:(row.status==='Sin registro'?99:1);
+ rows.sort((a,b)=>a.date.localeCompare(b.date)||statusPriority(a)-statusPriority(b)||a.name.localeCompare(b.name,'es'));
  const attended=rows.filter(r=>r.status==='Presente').length;
  const guardCount=rows.filter(r=>r.guardia).length;
  report={rows,start:interval.start,end:interval.end,people:people.length,attended,guardCount,missing:rows.filter(r=>r.status==='Sin registro').length,selectedDepartment:sel.options[sel.selectedIndex]?.textContent||'Todas las dependencias'};
@@ -612,7 +613,6 @@ $('guardEntryType').addEventListener('change',()=>{
  $('graciousQuantity').required=isGrant;
  $('guardDateLabel').textContent=isGrant?'Fecha de la concesión':'Fecha de guardia realizada';
  $('guardSave').textContent=isGrant?'+ Conceder días agraciables':'+ Registrar guardia y generar 2 días';
- $('guardNote').placeholder=isGrant?'Ej.: Concesión autorizada':'Ej.: Guardia de servicio';
 });
 $('guardSearch').addEventListener('input',renderGuardList);
 
@@ -621,7 +621,7 @@ $('guardPerson').addEventListener('change',e=>selectGuardPerson(e.target.value))
 $('guardUsePerson').addEventListener('change',e=>selectGuardPerson(e.target.value));
 $('guardForm').addEventListener('submit',async e=>{
  e.preventDefault();if(!adminReady)return;
- const uid=$('guardPerson').value,date=$('guardDate').value,note=$('guardNote').value.trim(),person=guardPeople.find(p=>p.id===uid),isGrant=$('guardEntryType').value==='agraciable',quantity=Number($('graciousQuantity').value);
+ const uid=$('guardPerson').value,date=$('guardDate').value,person=guardPeople.find(p=>p.id===uid),isGrant=$('guardEntryType').value==='agraciable',quantity=Number($('graciousQuantity').value);
  if(!person||person.active!==true)return guardError('guardMessage','Selecciona un trabajador activo.',true);
  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||date>madridDay())return guardError('guardMessage','Indica una fecha válida, no futura.',true);
  if(isGrant&&(!Number.isInteger(quantity)||quantity<1||quantity>365))return guardError('guardMessage','Indica entre 1 y 365 días agraciables.',true);
@@ -630,7 +630,7 @@ $('guardForm').addEventListener('submit',async e=>{
   const collectionName=isGrant?'graciousDays':'guardDuties',ref=doc(db,collectionName,uid+'_'+date);
   await runTransaction(db,async tx=>{
    const prior=await tx.get(ref);if(prior.exists())throw Error(isGrant?'Ya existe una concesión en esa fecha para este trabajador.':'Ya consta una guardia para ese trabajador en esa fecha.');
-   const payload={userId:uid,workDate:date,note,recordedBy:auth.currentUser.uid,recordedAt:serverTimestamp()};
+   const payload={userId:uid,workDate:date,recordedBy:auth.currentUser.uid,recordedAt:serverTimestamp()};
    if(isGrant)payload.quantity=quantity;
    tx.set(ref,payload);
   });
