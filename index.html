@@ -230,7 +230,7 @@ html,body {background:#e0e7f0;}
 .monthly-order-btn:disabled{opacity:.25;cursor:default}
 #monthlyEditOrder[aria-pressed="true"]{background:#244f87;color:#fff;border-color:#244f87}
 #monthlyEditStatus[aria-pressed="true"]{background:#244f87;color:#fff;border-color:#244f87}
-.monthly-table.monthly-status-editing tbody td[data-person][data-date]{cursor:pointer;outline-offset:-2px}
+.monthly-table.monthly-status-editing tbody td[data-person][data-date]{cursor:crosshair;outline-offset:-2px;user-select:none;-webkit-user-select:none;touch-action:pan-y}
 .monthly-table.monthly-status-editing tbody td[data-person][data-date]:hover{outline:2px solid #244f87;background:#dceaff}
 .monthly-table.monthly-status-editing tbody td[data-person][data-date]:focus-visible{outline:3px solid #244f87}
 .monthly-state-editor{border:1px solid #c6d7ed;border-radius:12px;background:#f5f9ff;padding:14px;margin:12px 0}
@@ -959,7 +959,7 @@ $('monthlyEditStatus').addEventListener('click',()=>{
  button.textContent=editing?'Finalizar edición de estados':'Editar estados';
  button.setAttribute('aria-pressed',String(editing));
  if(!editing)closeMonthlyStateEditor();
- else $('monthlyStatus').textContent='Edición activada: pulsa varios días de una misma persona. Mayús + clic selecciona un intervalo.';
+ else $('monthlyStatus').textContent='Edición activada: mantén pulsado el ratón y arrastra sobre los días de una misma persona. También puedes hacer clic o usar Mayús + clic.';
 });
 function openMonthlyStateEditor(person,date,existingType,present,guard,adminPresent=false,range=false){
  if(!$('monthlyTable').classList.contains('monthly-status-editing'))return;
@@ -986,6 +986,48 @@ function openMonthlyStateEditor(person,date,existingType,present,guard,adminPres
  monthlyStateEditor.classList.remove('hidden');
  // Mantener el calendario visible al seleccionar varios días.
 }
+// V6.15.23: selección de intervalos arrastrando el ratón sobre una sola fila.
+// Una pulsación breve mantiene la selección por clic anterior, con Mayús + clic.
+// No se cambian datos de Firebase hasta pulsar Guardar estado.
+let monthlyDrag=null;
+let monthlySkipDragClick=false;
+const monthlyTableNode=$('monthlyTable');
+monthlyTableNode.addEventListener('pointerdown',e=>{
+ if(!monthlyTableNode.classList.contains('monthly-status-editing')||e.button!==0||!['mouse','pen'].includes(e.pointerType))return;
+ const cell=e.target.closest('td[data-person][data-date]');
+ if(!cell||!monthlyTableNode.contains(cell))return;
+ monthlySkipDragClick=false;
+ monthlyDrag={personId:cell.dataset.person,startDate:cell.dataset.date,lastDate:cell.dataset.date,active:false};
+});
+window.addEventListener('pointermove',e=>{
+ if(!monthlyDrag||!(e.buttons&1)||!monthlyTableNode.classList.contains('monthly-status-editing'))return;
+ const hovered=document.elementFromPoint(e.clientX,e.clientY)?.closest('td[data-person][data-date]');
+ if(!hovered||!monthlyTableNode.contains(hovered)||hovered.dataset.person!==monthlyDrag.personId)return;
+ const nextDate=hovered.dataset.date;
+ if(nextDate===monthlyDrag.lastDate)return;
+ monthlyDrag.lastDate=nextDate;
+ const person=monthlyWorkersCache.find(p=>p.id===monthlyDrag.personId);
+ if(!person)return;
+ const original=monthlyTableNode.querySelector('td[data-person="'+monthlyDrag.personId+'"][data-date="'+monthlyDrag.startDate+'"]');
+ if(!original)return;
+ if(!monthlyDrag.active){
+  const k=person.id+'_'+monthlyDrag.startDate;
+  const existing=monthlyVisibleSituations?.get(k);
+  openMonthlyStateEditor(person,monthlyDrag.startDate,existing,monthlyVisibleAttendance?.has(k),monthlyVisibleGuards?.has(k),monthlyVisibleAdminAttendance?.has(k));
+  monthlyDrag.active=true;
+ }
+ monthlySelectedDates=[];
+ const k=person.id+'_'+nextDate;
+ openMonthlyStateEditor(person,nextDate,monthlyVisibleSituations?.get(k),monthlyVisibleAttendance?.has(k),monthlyVisibleGuards?.has(k),monthlyVisibleAdminAttendance?.has(k),true);
+ e.preventDefault();
+});
+window.addEventListener('pointerup',()=>{
+ if(monthlyDrag?.active)monthlySkipDragClick=true;
+ monthlyDrag=null;
+});
+window.addEventListener('pointercancel',()=>{monthlyDrag=null;});
+// Los mapas visibles se actualizan al consultar cada mes; no se modifica Firestore.
+let monthlyVisibleSituations=new Map(),monthlyVisibleAttendance=new Set(),monthlyVisibleGuards=new Set(),monthlyVisibleAdminAttendance=new Set();
 $('monthlyStateSave').addEventListener('click',async()=>{
  if(!monthlySelectedState||!adminReady||!auth.currentUser)return;
 
@@ -1128,6 +1170,7 @@ async function refreshMonthly(){
   const attendanceSet=new Set(attendanceMap.keys());
   const situationMap=new Map(situations.docs.map(d=>d.data()).filter(d=>d.userId&&d.workDate).map(d=>[d.userId+'_'+d.workDate,d.type]));
   const guardSet=new Set(guards.docs.map(d=>d.data()).filter(d=>d.userId&&d.workDate).map(d=>d.userId+'_'+d.workDate));
+  monthlyVisibleSituations=new Map([...situationMap].map(([key,value])=>[key,value]));monthlyVisibleAttendance=new Set(attendanceSet);monthlyVisibleGuards=new Set(guardSet);monthlyVisibleAdminAttendance=new Set([...attendanceMap].filter(([,a])=>a?.source==='admin').map(([key])=>key));
   const grantMap=new Map(grants.docs.map(d=>d.data()).filter(d=>d.userId&&d.workDate).map(d=>[d.userId+'_'+d.workDate,d]));
   const head=$('monthlyHead'),body=$('monthlyRows');head.replaceChildren();body.replaceChildren();
   const header=document.createElement('tr'),first=document.createElement('th');first.className='month-person';first.textContent='TRABAJADOR';header.appendChild(first);
@@ -1135,7 +1178,7 @@ async function refreshMonthly(){
   for(let d=1;d<=days;d++){const date=new Date(Date.UTC(Number(month.slice(0,4)),Number(month.slice(5,7))-1,d)),weekDay=date.getUTCDay();const th=document.createElement('th');th.textContent=d+' '+dayNames[weekDay];th.title=date.toLocaleDateString('es-ES',{timeZone:'UTC',weekday:'long',day:'numeric',month:'long'});th.classList.add((weekDay===0||weekDay===6)?'month-weekend':'month-weekday');header.appendChild(th)}
   head.appendChild(header);
   for(const person of workers){const tr=document.createElement('tr'),name=document.createElement('th');name.className='month-person';name.scope='row';name.textContent=person.fullName||person.email||person.id;const controls=document.createElement('span');controls.className='monthly-order-controls no-print';for(const [direction,symbol,title] of [[-1,'↑','Subir trabajador'],[1,'↓','Bajar trabajador']]){const btn=document.createElement('button');btn.type='button';btn.className='monthly-order-btn';btn.textContent=symbol;btn.title=title+' en registro e informes';btn.setAttribute('aria-label',title+' '+(person.fullName||person.email||''));btn.disabled=(direction===-1&&workers[0].id===person.id)||(direction===1&&workers[workers.length-1].id===person.id);btn.addEventListener('click',()=>moveWorkerInMonthly(person.id,direction));controls.appendChild(btn)}name.appendChild(controls);tr.appendChild(name);
-   for(let d=1;d<=days;d++){const date=start.slice(0,8)+String(d).padStart(2,'0'),key=person.id+'_'+date,[code,label,style]=monthlyStatusInfo(situationMap.get(key),attendanceSet.has(key),guardSet.has(key));const td=document.createElement('td');td.dataset.person=person.id;td.dataset.date=date;td.tabIndex=0;const weekDay=new Date(Date.UTC(Number(date.slice(0,4)),Number(date.slice(5,7))-1,Number(date.slice(8,10)))).getUTCDay();td.classList.add((weekDay===0||weekDay===6)?'month-weekend':'month-weekday');const mark=document.createElement('span');mark.className='monthly-cell '+style+(attendanceMap.get(key)?.source==='admin'?' monthly-manual-present':'');mark.textContent='';const mainCode=document.createElement('span');mainCode.className='monthly-grant-state';mainCode.textContent=code;mark.appendChild(mainCode);td.title=(person.fullName||person.email||'Trabajador')+' · '+date.split('-').reverse().join('/')+' · '+label+(attendanceMap.get(key)?.source==='admin'?' (presencia anotada por administración; motivo: '+(attendanceMap.get(key)?.reason||'no indicado')+')':'')+(grantMap.has(key)?' · Concesión: +'+grantMap.get(key).quantity+' día(s) graciable(s). Motivo: '+(grantMap.get(key).note||'—'):'');mark.setAttribute('aria-label',label+(attendanceMap.get(key)?.source==='admin'?' (registro administrativo)':'')+(grantMap.has(key)?' · Concesión de '+grantMap.get(key).quantity+' día(s) graciable(s)':''));if(grantMap.has(key)){mark.classList.add('monthly-has-grant');td.classList.add('monthly-grant-cell');const flag=document.createElement('span');flag.className='monthly-grant-flag';flag.textContent='+'+grantMap.get(key).quantity+'AG';mark.appendChild(flag)}td.appendChild(mark);td.addEventListener('click',e=>openMonthlyStateEditor(person,date,situationMap.get(key),attendanceSet.has(key),guardSet.has(key),attendanceMap.get(key)?.source==='admin',e.shiftKey));td.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&$('monthlyTable').classList.contains('monthly-status-editing')){e.preventDefault();openMonthlyStateEditor(person,date,situationMap.get(key),attendanceSet.has(key),guardSet.has(key),attendanceMap.get(key)?.source==='admin')}});tr.appendChild(td)}body.appendChild(tr)}
+   for(let d=1;d<=days;d++){const date=start.slice(0,8)+String(d).padStart(2,'0'),key=person.id+'_'+date,[code,label,style]=monthlyStatusInfo(situationMap.get(key),attendanceSet.has(key),guardSet.has(key));const td=document.createElement('td');td.dataset.person=person.id;td.dataset.date=date;td.tabIndex=0;const weekDay=new Date(Date.UTC(Number(date.slice(0,4)),Number(date.slice(5,7))-1,Number(date.slice(8,10)))).getUTCDay();td.classList.add((weekDay===0||weekDay===6)?'month-weekend':'month-weekday');const mark=document.createElement('span');mark.className='monthly-cell '+style+(attendanceMap.get(key)?.source==='admin'?' monthly-manual-present':'');mark.textContent='';const mainCode=document.createElement('span');mainCode.className='monthly-grant-state';mainCode.textContent=code;mark.appendChild(mainCode);td.title=(person.fullName||person.email||'Trabajador')+' · '+date.split('-').reverse().join('/')+' · '+label+(attendanceMap.get(key)?.source==='admin'?' (presencia anotada por administración; motivo: '+(attendanceMap.get(key)?.reason||'no indicado')+')':'')+(grantMap.has(key)?' · Concesión: +'+grantMap.get(key).quantity+' día(s) graciable(s). Motivo: '+(grantMap.get(key).note||'—'):'');mark.setAttribute('aria-label',label+(attendanceMap.get(key)?.source==='admin'?' (registro administrativo)':'')+(grantMap.has(key)?' · Concesión de '+grantMap.get(key).quantity+' día(s) graciable(s)':''));if(grantMap.has(key)){mark.classList.add('monthly-has-grant');td.classList.add('monthly-grant-cell');const flag=document.createElement('span');flag.className='monthly-grant-flag';flag.textContent='+'+grantMap.get(key).quantity+'AG';mark.appendChild(flag)}td.appendChild(mark);td.addEventListener('click',e=>{if(monthlySkipDragClick){monthlySkipDragClick=false;return;}openMonthlyStateEditor(person,date,situationMap.get(key),attendanceSet.has(key),guardSet.has(key),attendanceMap.get(key)?.source==='admin',e.shiftKey)});td.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&$('monthlyTable').classList.contains('monthly-status-editing')){e.preventDefault();openMonthlyStateEditor(person,date,situationMap.get(key),attendanceSet.has(key),guardSet.has(key),attendanceMap.get(key)?.source==='admin')}});tr.appendChild(td)}body.appendChild(tr)}
   if(!workers.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=days+1;td.textContent='No hay trabajadores activos registrados.';tr.appendChild(td);body.appendChild(tr)}
   $('monthlyStatus').textContent=workers.length+' trabajador(es) · '+days+' días · '+month.split('-').reverse().join('/')+'. «Sin registro» no equivale a ausencia. En pantallas estrechas, desplaza la tabla horizontalmente.';
   if(pendingMonthlyJump && pendingMonthlyJump.date.slice(0,7)===month){
